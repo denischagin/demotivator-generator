@@ -1,6 +1,7 @@
 <div class="demotivator">
   <h1 class="demotivator__heading">Demotivator generator</h1>
-  <form class="demotivator__wrapper">
+
+  <form class="demotivator__wrapper" [formGroup]="form" (submit)="submit()">
     <div class="demotivator__img">
       <p *ngIf="dragStatus === 'enter'" class="demotivator__img-drop">
         Drop your image every where
@@ -10,9 +11,11 @@
         <input type="file"/>
       </label>
     </div>
-    <input class="demotivator__input demotivator__title" placeholder="Title"/>
+    <input class="demotivator__input demotivator__title" placeholder="Title" formControlName="text1"/>
 
-    <input class="demotivator__input demotivator__subtitle" placeholder="Subtitle"/>
+    <input class="demotivator__input demotivator__subtitle" placeholder="Subtitle" formControlName="text2"/>
+
+    <button type="submit" hidden></button>
   </form>
 
 </div>

@@ -1,5 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {NgForOf, NgIf} from "@angular/common";
+import {DemotivatorService} from "../../services/demotivator.service";
+import {FormControl, FormGroup, ReactiveFormsModule} from "@angular/forms";
 
 type DragStatuses = 'leave' | 'enter'
 
@@ -9,43 +11,74 @@ type DragStatuses = 'leave' | 'enter'
   imports: [
     NgIf,
     NgForOf,
+    ReactiveFormsModule,
   ],
   templateUrl: './demotivator.component.html',
   styleUrl: './demotivator.component.scss'
 })
 export class DemotivatorComponent implements OnInit {
-
   public dragStatus: DragStatuses = 'leave'
+  public loadedFile: File | null = null
+
+  public form = new FormGroup({
+    text1: new FormControl(''),
+    text2: new FormControl('')
+  })
+
+  constructor(public demotivatorService: DemotivatorService) {
+  }
 
   private changeDragStatus(status: DragStatuses) {
     this.dragStatus = status
   }
 
+
+  handleFileLoad(file: File) {
+    this.loadedFile = file
+  }
+
   handleDragEnter = (e: DragEvent) => {
     e.preventDefault();
     this.changeDragStatus('enter');
-    console.log('handleDragEnter');
   };
 
   handleDragLeave = (e: DragEvent) => {
     e.preventDefault();
     this.changeDragStatus('leave')
-    console.log('handleDragLeave');
   };
 
   handleDrop = (e: DragEvent) => {
     e.preventDefault();
 
     this.changeDragStatus('leave');
-    console.log('handleDrop');
-    // handleFileLoad(e.dataTransfer.files[0]);
+    if (!e.dataTransfer)
+      return
+
+    this.handleFileLoad(e.dataTransfer?.files[0]);
   };
 
   handleDragOver = (e: DragEvent) => {
     e.preventDefault();
     this.changeDragStatus('enter');
-    console.log('handleDragOver');
   };
+
+  submit() {
+    console.log(this.loadedFile)
+    if (!this.loadedFile) return
+
+    const newFormData = new FormData();
+    newFormData.append('file', this.loadedFile);
+
+    const {text1 = "", text2 = ""} = this.form.value
+
+    this.demotivatorService
+      .getDemotivator(
+        newFormData,
+        text1 ?? '',
+        text2 ?? ''
+      )
+      .subscribe((data) => console.log(data))
+  }
 
   ngOnInit() {
     document.addEventListener('dragenter', this.handleDragEnter.bind(this));
