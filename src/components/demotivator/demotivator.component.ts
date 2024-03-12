@@ -77,7 +77,15 @@ export class DemotivatorComponent implements OnInit {
         text1 ?? '',
         text2 ?? ''
       )
-      .subscribe((data) => console.log(data))
+      .subscribe((data) => this.download(data))
+  }
+
+  download(blobFile: Blob) {
+    let a = document.createElement("a");
+    let file = new Blob([blobFile], {type: 'image/svg+xml'});
+    a.href = URL.createObjectURL(file);
+    a.download = "demotivator.svg";
+    a.click();
   }
 
   ngOnInit() {
