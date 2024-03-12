@@ -1,0 +1,18 @@
+<div class="demotivator">
+  <h1 class="demotivator__heading">Demotivator generator</h1>
+  <form class="demotivator__wrapper">
+    <div class="demotivator__img">
+      <p *ngIf="dragStatus === 'enter'" class="demotivator__img-drop">
+        Drop your image every where
+      </p>
+      <label class="demotivator__img-drop" *ngIf="dragStatus !== 'enter'">
+        Drop image
+        <input type="file"/>
+      </label>
+    </div>
+    <input class="demotivator__input demotivator__title" placeholder="Title"/>
+
+    <input class="demotivator__input demotivator__subtitle" placeholder="Subtitle"/>
+  </form>
+
+</div>
