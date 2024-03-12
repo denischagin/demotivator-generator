@@ -19,9 +19,6 @@ export class DemotivatorService {
           }
         }
       ),
-      headers: {
-        'Content-Type':'multipart/form-data'
-      }
     })
   }
 }
