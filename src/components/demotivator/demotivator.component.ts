@@ -108,11 +108,22 @@ export class DemotivatorComponent implements OnInit {
     this.handleFileLoad(file)
   }
 
+  onPaste(event: ClipboardEvent) {
+    event.preventDefault();
+
+    const file = event.clipboardData?.files[0];
+
+    if (!file) return;
+
+    this.handleFileLoad(file);
+  }
+
 
   ngOnInit() {
     document.addEventListener('dragenter', this.handleDragEnter.bind(this));
     document.addEventListener("dragleave", this.handleDragLeave.bind(this));
     document.addEventListener("drop", this.handleDrop.bind(this));
     document.addEventListener("dragover", this.handleDragOver.bind(this));
+    document.addEventListener("paste", this.onPaste.bind(this));
   }
 }
