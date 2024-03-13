@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {NgForOf, NgIf} from "@angular/common";
 import {DemotivatorService} from "../../services/demotivator.service";
 import {FormControl, FormGroup, ReactiveFormsModule} from "@angular/forms";
+import {FileService} from "../../services/file.service";
 
 type DragStatuses = 'leave' | 'enter'
 
@@ -25,7 +26,7 @@ export class DemotivatorComponent implements OnInit {
     text2: new FormControl('')
   })
 
-  constructor(public demotivatorService: DemotivatorService) {
+  constructor(public demotivatorService: DemotivatorService, public fileService: FileService) {
   }
 
   private changeDragStatus(status: DragStatuses) {
@@ -46,14 +47,6 @@ export class DemotivatorComponent implements OnInit {
     this.changeDragStatus('leave')
   };
 
-  download(blobFile: Blob) {
-    console.log(blobFile)
-    let a = document.createElement("a");
-    let file = new Blob([blobFile], {type: 'image/svg+xml'});
-    a.href = URL.createObjectURL(file);
-    a.download = "demotivator.svg";
-    a.click();
-  }
 
   handleDrop = (e: DragEvent) => {
     e.preventDefault();
@@ -84,7 +77,9 @@ export class DemotivatorComponent implements OnInit {
         text1 ?? '',
         text2 ?? ''
       )
-      .subscribe((data) => this.download(data))
+      .subscribe(async (data) => {
+        await this.fileService.download(data)
+      })
   }
 
   onFileChange(event: Event) {
