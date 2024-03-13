@@ -3,6 +3,7 @@ import {NgForOf, NgIf} from "@angular/common";
 import {DemotivatorService} from "../../services/demotivator.service";
 import {FormControl, FormGroup, ReactiveFormsModule} from "@angular/forms";
 import {FileService} from "../../services/file.service";
+import {ValidateFileService} from "../../services/validate-file.service";
 
 type DragStatuses = 'leave' | 'enter'
 
@@ -27,7 +28,11 @@ export class DemotivatorComponent implements OnInit {
     text2: new FormControl('')
   })
 
-  constructor(public demotivatorService: DemotivatorService, public fileService: FileService) {
+  constructor(
+    public demotivatorService: DemotivatorService,
+    public fileService: FileService,
+    public validateFileService: ValidateFileService
+  ) {
   }
 
   private changeDragStatus(status: DragStatuses) {
@@ -35,6 +40,11 @@ export class DemotivatorComponent implements OnInit {
   }
 
   handleFileLoad(file: File) {
+    const errors = this.validateFileService.validate(file)
+
+    if (errors.length > 0)
+      return alert(errors.join(','))
+
     this.loadedFile = file
   }
 

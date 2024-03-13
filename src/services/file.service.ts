@@ -37,8 +37,7 @@ export class FileService {
     if (!filePng) return alert('Can not convert svg to png');
 
     a.href = URL.createObjectURL(filePng);
-    a.download = "demotivator.svg";
+    a.download = "demotivator.png";
     a.click();
-
   }
 }
