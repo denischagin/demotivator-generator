@@ -4,6 +4,7 @@ import {DemotivatorService} from "../../services/demotivator.service";
 import {FormControl, FormGroup, ReactiveFormsModule} from "@angular/forms";
 import {FileService} from "../../services/file.service";
 import {ValidateFileService} from "../../services/validate-file.service";
+import {LoaderComponent} from "../loader/loader.component";
 
 type DragStatuses = 'leave' | 'enter'
 
@@ -14,6 +15,7 @@ type DragStatuses = 'leave' | 'enter'
     NgIf,
     NgForOf,
     ReactiveFormsModule,
+    LoaderComponent,
   ],
   templateUrl: './demotivator.component.html',
   styleUrl: './demotivator.component.scss'
