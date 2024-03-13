@@ -25,4 +25,6 @@ export class DemotivatorService {
       responseType: 'blob',
     })
   }
+
+
 }

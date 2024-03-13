@@ -22,6 +22,7 @@
   }
 
   &__img-drop {
+    border: none;
     background: rgba(55, 105, 124, 0.3);
     padding: 10px 20px;
     color: #b4b4b4;
@@ -39,6 +40,8 @@
 
   &__img {
     display: flex;
+    flex-direction: column;
+    gap: 5px;
     align-items: center;
     justify-content: center;
     width: 100%;
@@ -51,6 +54,11 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+  }
+
+  &__text {
+    color: white;
+    text-align: center;
   }
 
   &__title {
@@ -72,6 +80,17 @@
     &::placeholder {
       color: gray
     }
+  }
 
+  &__submit {
+    margin-top: 30px;
+    color: white;
+    cursor: pointer;
+    padding: 15px 30px;
+    min-width: 150px;
+    background: #2d6262;
+    border-radius: 30px;
+    border: none;
+    font-size: 17px;
   }
 }
