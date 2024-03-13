@@ -22,3 +22,11 @@
   <button type="submit" class="demotivator__submit">Generate</button>
 
 </form>
+
+
+<div class="loading" *ngIf="!!loadingStage">
+  <div class="loading__content">
+    <span class="loader"></span>
+    <p class="loading__text">{{ loadingStage }}</p>
+  </div>
+</div>

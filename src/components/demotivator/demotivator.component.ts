@@ -20,6 +20,7 @@ type DragStatuses = 'leave' | 'enter'
 export class DemotivatorComponent implements OnInit {
   public dragStatus: DragStatuses = 'leave'
   public loadedFile: File | null = null
+  public loadingStage: string | null = null
 
   public form = new FormGroup({
     text1: new FormControl(''),
@@ -71,6 +72,8 @@ export class DemotivatorComponent implements OnInit {
 
     const {text1 = "", text2 = ""} = this.form.value
 
+    this.loadingStage = 'Create demotivator...'
+
     this.demotivatorService
       .getDemotivator(
         newFormData,
@@ -78,7 +81,9 @@ export class DemotivatorComponent implements OnInit {
         text2 ?? ''
       )
       .subscribe(async (data) => {
+        this.loadingStage = 'Converting to png and saving...'
         await this.fileService.download(data)
+        this.loadingStage = null
       })
   }
 
