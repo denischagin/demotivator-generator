@@ -1,16 +1,20 @@
 import {Component, Input} from '@angular/core';
-import {NgIf} from "@angular/common";
+import {AsyncPipe, NgIf} from "@angular/common";
+import {LoaderService} from "../../services/loader.service";
 
 @Component({
   selector: 'app-loader',
   standalone: true,
   imports: [
-    NgIf
+    NgIf,
+    AsyncPipe
   ],
   templateUrl: './loader.component.html',
   styleUrl: './loader.component.scss'
 })
 export class LoaderComponent {
-  @Input() loadingStage: string | null = null;
+  constructor(
+    public loaderService: LoaderService
+  ) {}
 
 }

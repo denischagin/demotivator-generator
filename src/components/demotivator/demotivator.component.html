@@ -1,16 +1,16 @@
-<form [formGroup]="form" (submit)="submit()" class="demotivator">
+<form [formGroup]="form" (submit)="handleSubmit()" class="demotivator">
   <h1 class="demotivator__heading">Demotivator generator</h1>
 
   <div class="demotivator__wrapper">
     <div class="demotivator__img">
-      <p *ngIf="dragStatus === 'enter'" class="demotivator__img-drop">
+      <p *ngIf="dragService.dragStatus$.value === 'enter'" class="demotivator__img-drop">
         Drop your image every where
       </p>
-      <label class="demotivator__img-drop" *ngIf="dragStatus !== 'enter'">
+      <label class="demotivator__img-drop" *ngIf="dragService.dragStatus$.value !== 'enter'">
         Drop image
-        <input type="file" (change)="onFileChange($event)"/>
+        <input type="file" (change)="handleFileChange($event)" [accept]="validateFileService.fileTypes.join(',')"/>
       </label>
-      <p *ngIf="loadedFile as file" class="demotivator__text">
+      <p *ngIf="fileService.loadedFile$ | async as file" class="demotivator__text">
         <strong>({{ file.name }})</strong> selected
       </p>
     </div>
@@ -23,4 +23,4 @@
 
 </form>
 
-<app-loader [loadingStage]="loadingStage" *ngIf="loadingStage"/>
+<app-loader/>

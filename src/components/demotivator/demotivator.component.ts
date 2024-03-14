@@ -1,12 +1,12 @@
 import {Component, OnInit} from '@angular/core';
-import {NgForOf, NgIf} from "@angular/common";
+import {AsyncPipe, NgForOf, NgIf} from "@angular/common";
 import {DemotivatorService} from "../../services/demotivator.service";
 import {FormControl, FormGroup, ReactiveFormsModule} from "@angular/forms";
 import {FileService} from "../../services/file.service";
-import {ValidateFileService} from "../../services/validate-file.service";
 import {LoaderComponent} from "../loader/loader.component";
-
-type DragStatuses = 'leave' | 'enter'
+import {LoaderService} from "../../services/loader.service";
+import {DragService} from "../../services/drag.service";
+import {ValidateFileService} from "../../services/validate-file.service";
 
 @Component({
   selector: 'app-demotivator',
@@ -16,114 +16,87 @@ type DragStatuses = 'leave' | 'enter'
     NgForOf,
     ReactiveFormsModule,
     LoaderComponent,
+    AsyncPipe,
   ],
   templateUrl: './demotivator.component.html',
   styleUrl: './demotivator.component.scss'
 })
 export class DemotivatorComponent implements OnInit {
-  public dragStatus: DragStatuses = 'leave'
-  public loadedFile: File | null = null
-  public loadingStage: string | null = null
-
   public form = new FormGroup({
     text1: new FormControl(''),
     text2: new FormControl('')
   })
 
   constructor(
-    public demotivatorService: DemotivatorService,
+    private demotivatorService: DemotivatorService,
+    private loaderService: LoaderService,
     public fileService: FileService,
-    public validateFileService: ValidateFileService
+    public validateFileService: ValidateFileService,
+    public dragService: DragService
   ) {
   }
 
-  private changeDragStatus(status: DragStatuses) {
-    this.dragStatus = status
-  }
-
-  handleFileLoad(file: File) {
-    const errors = this.validateFileService.validate(file)
-
-    if (errors.length > 0)
-      return alert(errors.join(','))
-
-    this.loadedFile = file
-  }
-
-  handleDragEnter = (e: DragEvent) => {
+  handleDragEnter(e: DragEvent) {
     e.preventDefault();
-    this.changeDragStatus('enter');
+    this.dragService.changeDragStatus("enter")
   };
 
-  handleDragLeave = (e: DragEvent) => {
+  handleDragLeave(e: DragEvent) {
     e.preventDefault();
-    this.changeDragStatus('leave')
+    this.dragService.changeDragStatus('leave')
   };
 
-
-  handleDrop = (e: DragEvent) => {
+  handleDrop(e: DragEvent) {
     e.preventDefault();
 
-    this.changeDragStatus('leave');
+    this.dragService.changeDragStatus('leave');
     if (!e.dataTransfer)
       return
 
-    this.handleFileLoad(e.dataTransfer?.files[0]);
+    this.fileService.handleFileLoad(e.dataTransfer?.files[0]);
   };
 
-  handleDragOver = (e: DragEvent) => {
+  handleDragOver(e: DragEvent) {
     e.preventDefault();
-    this.changeDragStatus('enter');
+    this.dragService.changeDragStatus('enter');
   };
 
-  submit() {
-    if (!this.loadedFile) return alert('No file selected')
+  handleSubmit() {
+    const loadedFile = this.fileService.loadedFile$.getValue();
+    if (!loadedFile) return alert('No file selected')
 
-    const newFormData = new FormData();
-    newFormData.append('file', this.loadedFile);
+    const fileFormData = new FormData();
+    fileFormData.append('file', loadedFile);
 
-    const {text1 = "", text2 = ""} = this.form.value
-
-    this.loadingStage = 'Create demotivator...'
-
+    this.loaderService.changeLoaderStage("Create demotivator...")
     this.demotivatorService
-      .getDemotivator(
-        newFormData,
-        text1 ?? '',
-        text2 ?? ''
-      )
+      .getDemotivator({fileFormData, ...this.form.value})
       .subscribe(async (data) => {
-        this.loadingStage = 'Converting to png and saving...'
+        this.loaderService.changeLoaderStage("Converting to png and saving...")
         await this.fileService.download(data)
-        this.loadingStage = null
+        this.loaderService.changeLoaderStage(null)
       })
   }
 
-  onFileChange(event: Event) {
-    const input = event.target as HTMLInputElement
-
-    const file = input.files?.[0]
-    if (!file) return alert('No file selected')
-
-    this.handleFileLoad(file)
+  handleFileChange(e: Event) {
+    const input = e.target as HTMLInputElement
+    this.fileService.handleFileLoad(input.files?.[0])
   }
 
-  onPaste(event: ClipboardEvent) {
-    event.preventDefault();
+  handlePaste(e: ClipboardEvent) {
+    e.preventDefault();
 
-    const file = event.clipboardData?.files[0];
-
+    const file = e.clipboardData?.files[0];
     if (!file) return;
 
-    this.handleFileLoad(file);
+    this.fileService.handleFileLoad(file);
   }
-
 
   ngOnInit() {
     document.addEventListener('dragenter', this.handleDragEnter.bind(this));
     document.addEventListener("dragleave", this.handleDragLeave.bind(this));
     document.addEventListener("drop", this.handleDrop.bind(this));
     document.addEventListener("dragover", this.handleDragOver.bind(this));
-    document.addEventListener("paste", this.onPaste.bind(this));
+    document.addEventListener("paste", this.handlePaste.bind(this));
   }
 }

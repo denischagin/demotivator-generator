@@ -1,11 +1,23 @@
 import {Injectable} from '@angular/core';
+import {BehaviorSubject} from "rxjs";
+import {ValidateFileService} from "./validate-file.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class FileService {
+  loadedFile$ = new BehaviorSubject<File | null>(null)
 
-  constructor() {
+  constructor(private validateFileService: ValidateFileService) {
+  }
+
+  public handleFileLoad(file?: File) {
+    const errors = this.validateFileService.validate(file!)
+
+    if (errors.length > 0)
+      return alert(errors.join(','))
+
+    this.loadedFile$.next(file!)
   }
 
   private svgToPng(svgBlob: Blob): Promise<Blob | null> {

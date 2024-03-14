@@ -9,9 +9,9 @@ export class ValidateFileService implements Validator {
   constructor() {
   }
 
-  private fileTypes = ['image/jpeg', 'image/png', 'image/jpg']
+  public fileTypes = ['image/jpeg', 'image/png', 'image/jpg']
 
-  validate(file: File | Blob) {
+  validate(file?: File | Blob) {
     const errors: string[] = []
     if (!file) {
       errors.push('File is required')
